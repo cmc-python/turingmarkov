@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Ejudge binding for turing compiler.
+
+# Based on:
+# * https://ejudge.ru/wiki/index.php/Foo-version.in
+# * https://github.com/blackav/ejudge/tree/master/scripts
+
+LANG_CONFIG_DIR="/home/judges/compile/conf/lang.d"
+[ "${EJUDGE_LANG_CONFIG}" = "" ] && EJUDGE_LANG_CONFIG="${LANG_CONFIG_DIR}/turing"
+
+if [ -f "${EJUDGE_LANG_CONFIG}" ]
+then
+  . "${EJUDGE_LANG_CONFIG}"
+else
+  version="unknown"
+  TURINGPATH=`which turingmarkov 2>/dev/null` || TURINGPATH=/bin/false
+fi
+
+if [ x"${version}" = x -o x"${TURINGPATH}" = x/bin/false ]
+then
+  echo "This language is not supported." >&2
+  exit 1
+fi
+
+${TURINGPATH} compile turing $1 >$2 || exit 1
+chmod +x $2
+exit 0
